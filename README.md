@@ -39,7 +39,7 @@ Most book-to-script tools treat adaptation as **reformatting**. This skill treat
 **Claude Code.** Copy the folder into `~/.claude/skills/`:
 
 ```bash
-git clone https://github.com/<you>/adapting-novels-to-screenplays.git
+git clone https://github.com/almakamberi/adapting-novels-to-screenplays.git
 cp -r adapting-novels-to-screenplays/adapting-novels-to-screenplays ~/.claude/skills/
 ```
 

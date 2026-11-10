@@ -8,7 +8,10 @@
   budget [STATE] [SCRIPT]            outline word budgets vs written scenes, projected length
   check SCRIPT [--bible bible.md]    format + Nolan-rule + consistency checks
   quote book.md "line of dialogue"   verify a line really is in the book (and where)
-  render SCRIPT out.pdf              screenplay-formatted PDF (Courier 12, scene numbers)
+  render SCRIPT out.pdf [--font F]   screenplay-formatted PDF (Courier 12, scene numbers)
+
+Korean chapter headings may be 제1장 / 제 2 장 / 3장. To render Hangul,
+pass --font /path/to/Korean.ttf to embed a font that covers the script.
 """
 import sys, re, json, os, zipfile, datetime, unicodedata
 from collections import Counter
@@ -19,6 +22,24 @@ CHAP_RE = re.compile(r'^\s*(#+\s*)?((prologue|epilogue|interlude|afterword|forew
                      r'eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|'
                      r'forty|fifty|sixty|seventy|eighty|ninety|first|second|third|last|final)\b([\s.:—-].*)?|'
                      r'([ivxl]{1,7}|[0-9]{1,3})\s*[.:—-]\s+\S.*|([ivxl]{1,7}|[0-9]{1,3})\s*)$', re.I)
+
+# Korean chapter headings: 제1장, 제 2 장, 3장, each with an optional title after it.
+KO_CHAP_RE = re.compile(r'^\s*(?:#+\s*)?(?:제\s*)?([0-9]{1,4}|[일이삼사오육칠팔구십]{1,6})\s*장(?![가-힣])')
+
+def _ko_chapter(line):
+    """Return the heading text of a Korean chapter line, or None when the line is prose."""
+    m = KO_CHAP_RE.match(line)
+    if not m:
+        return None
+    rest = line[m.end():].strip()
+    if rest:                                    # a title may follow the marker
+        rest = re.sub(r'^[:：\-–—.]\s*', '', rest).strip()
+        if rest:
+            if re.search(r'[.!?…。，,;；]', rest):   # sentence punctuation = prose, not a title
+                return None
+            if len(rest) > 40:
+                return None
+    return line.strip().lstrip('#').strip()
 
 def _pdf_pages(path):
     from pypdf import PdfReader
@@ -69,13 +90,15 @@ def _reflow(text):
         l = line.strip()
         if not l:
             if cur: paras.append(' '.join(cur)); cur = []
-        elif CHAP_RE.match(l) and len(l) < 70:
-            if cur: paras.append(' '.join(cur)); cur = []
-            paras.append('# ' + l.lstrip('# '))
         else:
-            cur.append(l)
-            if re.search(r'[.!?"”’:]$', l) and len(l) < 55: # short final line = paragraph end
-                paras.append(' '.join(cur)); cur = []
+            ko = _ko_chapter(l)
+            if ko or (CHAP_RE.match(l) and len(l) < 70):
+                if cur: paras.append(' '.join(cur)); cur = []
+                paras.append('# ' + (ko if ko else l.lstrip('# ')))
+            else:
+                cur.append(l)
+                if re.search(r'[.!?"”’:]$', l) and len(l) < 55: # short final line = paragraph end
+                    paras.append(' '.join(cur)); cur = []
     if cur: paras.append(' '.join(cur))
     return paras
 
@@ -202,17 +225,29 @@ WIDTH = {'scene': 61, 'action': 61, 'character': 38, 'dialogue': 35, 'paren': 25
 INDENT = {'scene': 0, 'action': 0, 'character': 2.2, 'dialogue': 1.0, 'paren': 1.6, 'transition': 4.0, 'centered': 0}
 LINES_PER_PAGE = 54
 
-def _wrap(t, w):
+def _w(text):
+    """Estimate width in Courier character units for the check and pages commands."""
+    return sum(2 if unicodedata.east_asian_width(ch) in ('W', 'F') else 1 for ch in text)
+
+def _wrap(t, w, width=_w):
     words, out, cur = t.split(), [], ''
     for wd in words:
-        if len(cur) + len(wd) + (1 if cur else 0) > w:
-            out.append(cur); cur = wd
-        else:
-            cur = (cur + ' ' + wd).strip()
+        if cur and width(cur + ' ' + wd) > w:
+            out.append(cur); cur = ''
+        if width(wd) > w:                    # a single word longer than the column: break it
+            chunk = ''
+            for ch in wd:
+                if chunk and width(chunk + ch) > w:
+                    out.append(chunk); chunk = ch
+                else:
+                    chunk += ch
+            cur = chunk
+            continue
+        cur = (cur + ' ' + wd).strip()
     if cur: out.append(cur)
     return out or ['']
 
-def layout(els):
+def layout(els, width=_w):
     """Return pages: list of lists of (kind, text, scene) lines. Blank lines are ('blank','',None)."""
     blocks, k = [], 0
     while k < len(els):
@@ -223,11 +258,11 @@ def layout(els):
             blk = [('character', text.upper(), sc)]
             k += 1
             while k < len(els) and els[k][0] in ('dialogue', 'paren'):
-                for w in _wrap(els[k][1], WIDTH[els[k][0]]): blk.append((els[k][0], w, sc))
+                for w in _wrap(els[k][1], WIDTH[els[k][0]], width): blk.append((els[k][0], w, sc))
                 k += 1
             blocks.append(('dialogue', blk)); continue
         t = text.upper() if kind in ('scene', 'transition') else text
-        blk = [(kind, w, sc) for w in _wrap(re.sub(r'\*+|_', '', t), WIDTH[kind])]
+        blk = [(kind, w, sc) for w in _wrap(re.sub(r'\*+|_', '', t), WIDTH[kind], width)]
         blocks.append((kind, blk)); k += 1
     pages, page = [], []
     for idx, (kind, blk) in enumerate(blocks):
@@ -417,16 +452,67 @@ def cmd_quote(book, line):
         print(f'NOT IN BOOK (closest paragraph shares {best:.0%} of the words) - mark it as adapted dialogue, not the author\'s.')
 
 # ---------------------------------------------------------------- render
-def cmd_render(path, out):
+HANGUL_RE = re.compile('[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3\ua960-\ua97f\ud7b0-\ud7ff]')
+
+def _emitted_text(title, pages):
+    """Every string the PDF will actually draw."""
+    out = []
+    for key in ('title', 'credit', 'author', 'source', 'draft date', 'contact', 'notes'):
+        value = title.get(key, '')
+        if key in ('title', 'credit', 'author', 'source'):
+            value = value.replace('*', '').replace('_', '')
+        out.append(value.upper() if key == 'title' else value)
+    for page in pages:
+        for kind, text, sc in page:
+            if kind != 'blank':
+                out.append(text)
+                if kind == 'scene' and sc and not str(sc).startswith('?'):
+                    out.append(str(sc))
+    return out
+
+def _register_korean_ttf(path, strings):
+    """Register an embedded TrueType font, after checking it can draw every character."""
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    if not os.path.isfile(path):
+        sys.exit(f'ERROR: font file not found: {path}')
+    name = 'KoreanTTF'
+    try:
+        font = TTFont(name, path)
+    except Exception as e:
+        sys.exit(f'ERROR: {path} cannot be used as a PDF font: {e}\n'
+                 f'       Use a TrueType (.ttf) font that covers Hangul, e.g. NanumGothic.ttf.')
+    cmap = font.face.charToGlyph
+    missing = sorted({ch for s in strings for ch in s if not ch.isspace() and not cmap.get(ord(ch))})
+    if missing:
+        sys.exit(f'ERROR: {path} has no glyph for: {" ".join(missing)}\n'
+                 '       Choose a TrueType font that covers those characters.')
+    pdfmetrics.registerFont(font)
+    return name
+
+def cmd_render(path, out, font_path=None):
     from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import letter
+    from reportlab.pdfbase import pdfmetrics
     title, els = parse(path)
     pages = layout(els)
+    strings = _emitted_text(title, pages)
+    korean = any(HANGUL_RE.search(s) for s in strings if s)
+    if korean:
+        if not font_path:
+            sys.exit('ERROR: Korean PDF output requires --font /path/to/Korean.ttf to embed Hangul glyphs.')
+        font = _register_korean_ttf(font_path, strings)
+        courier_width = pdfmetrics.stringWidth('M', 'Courier', 12)
+        pages = layout(els, lambda line: pdfmetrics.stringWidth(line, font, 12) / courier_width)
+    else:
+        font = 'Courier'
+        if font_path:
+            print(f'NOTE: --font {font_path} ignored - the script has no Hangul, so it uses Courier.', file=sys.stderr)
     c = canvas.Canvas(out, pagesize=letter)
     W, H = letter; inch = 72; lh = 12
     c.setTitle(title.get('title', os.path.basename(path)))
     if title:
-        c.setFont('Courier', 12)
+        c.setFont(font, 12)
         y = H - 3.5 * inch
         for key in ('title', 'credit', 'author', 'source'):
             for ln in title.get(key, '').replace('*', '').replace('_', '').split('\n'):
@@ -439,7 +525,7 @@ def cmd_render(path, out):
                 if ln: c.drawString(1.5 * inch, y, ln); y -= lh
         c.showPage()
     for pno, page in enumerate(pages, 1):
-        c.setFont('Courier', 12)
+        c.setFont(font, 12)
         if pno > 1: c.drawRightString(W - 1 * inch, H - 0.5 * inch, f'{pno}.')
         y = H - 1 * inch
         for kind, text, sc in page:
@@ -456,7 +542,8 @@ def cmd_render(path, out):
             y -= lh
         c.showPage()
     c.save()
-    print(f'Rendered {out}: {len(pages)} pages' + (' + title page' if title else ''))
+    print(f'Rendered {out}: {len(pages)} pages' + (' + title page' if title else '')
+          + (f' (font: {font})' if korean else ''))
 
 # ---------------------------------------------------------------- main
 def main(a):
@@ -470,7 +557,14 @@ def main(a):
     elif cmd == 'budget': cmd_budget(a[1] if len(a) > 1 else 'adaptation-state.json', a[2] if len(a) > 2 else None)
     elif cmd == 'check': cmd_check(a[1], opt('--bible'))
     elif cmd == 'quote': cmd_quote(a[1], a[2])
-    elif cmd == 'render': cmd_render(a[1], a[2])
+    elif cmd == 'render':
+        fp = None
+        if '--font' in a:
+            i = a.index('--font')
+            if i + 1 >= len(a) or a[i + 1].startswith('--'):
+                sys.exit('ERROR: --font needs the path to a TrueType (.ttf) font file.')
+            fp = a[i + 1]
+        cmd_render(a[1], a[2], fp)
     else: print(__doc__)
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 # Adapting Novels to Screenplays: a Claude skill
 
+[한국어 안내](README.ko.md)
+
 Turn a novel, novella or classic into a **feature-film screenplay**, working as a partnership: **you're the editor, Claude is the writer.** Claude proposes and explains every choice. You decide.
 
 It reads a PDF, EPUB, DOCX or plain-text book. It works in stages you approve, and it can pick up where you left off in a later session. What you get at the end is a formatted screenplay in Fountain and PDF, along with the documents that explain it.

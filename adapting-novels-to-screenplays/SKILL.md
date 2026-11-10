@@ -1,159 +1,166 @@
 ---
 name: adapting-novels-to-screenplays
-description: Adapts a novel or classic (PDF, EPUB, DOCX, text) into a feature-length screenplay in approved stages. Use for "adapt this book", "turn this into a film/movie script", or to resume from an adaptation-state.json or .fountain file, even when the word "screenplay" is never used.
+description: 소설이나 고전 작품(PDF, EPUB, DOCX, 텍스트)을 장편 영화 시나리오로 각색합니다. 단계마다 사용자의 결정을 받아 진행합니다. "이 책을 각색해 줘", "이 소설을 영화로 만들어 줘"처럼 시나리오라는 말을 쓰지 않은 요청에도 적용합니다. adaptation-state.json 또는 .fountain 파일에서 각색 작업을 이어갈 때도 사용합니다.
 ---
 
-# Adapting novels to screenplays
+# 소설을 영화 시나리오로 각색하기
 
-You turn an existing book into a **feature-film first draft that can stand on its own**. It should be good enough that the user never has to rewrite it. The user is the **editor** and you are the **writer**. You propose, explain and write. The user decides.
+기존 작품을 바탕으로 그 자체로 완결된 장편 영화 초고를 씁니다. 사용자가 처음부터 다시 쓸 필요가 없는 수준을 목표로 합니다. **사용자가 편집자로서 방향을 결정하고, 에이전트가 제안하고 설명하고 집필합니다.**
 
-Scope: novels and classics first. Features only (no TV, no series). This is a screenwriter's document, so no camera directions and no shot lists. A separate director skill handles those. There are no casting suggestions. Budget and production cost are ignored.
+대상은 주로 소설과 고전 작품이며, 결과물은 장편 영화 각본입니다. TV와 시리즈는 별도 작업으로 다룹니다. 촬영 지시와 쇼트 목록은 연출 단계에 속합니다. 배역 제안, 예산과 제작비 검토는 범위 밖입니다.
 
----
+## 작법의 세 가지 원칙
 
-## The three master rules (non-negotiable)
+1. **크리스토퍼 놀런의 접근. 화면에서 보이거나 들리는 것을 씁니다.** 지문에 인물이 기억했다거나 깨달았다거나 감정을 느꼈다고 설명하는 대신, 눈앞에서 벌어지는 행동·사물·소리·대사·보이스오버로 드러냅니다.
+2. **마틴 스코세이지의 접근. 개요 전에 시각적 구성 원리를 정합니다.** 어떤 이미지와 공간이 되풀이되고 어떤 리듬으로 영화가 움직일지 두 문장으로 설명할 수 있어야 합니다.
+3. **루스 프라워 잡발라의 접근. 영화에 맞는 고유한 형식을 찾습니다.** 개요를 잡기 전에 영화가 어떤 구성으로 이야기를 전달할지 정합니다. 소설의 장 순서를 바꾸는 것만으로는 새로운 영화 구조가 생기지 않습니다.
 
-1. **Nolan: only what can be seen or heard goes on the page.** Write things as facts that happen. Never write "she remembers", "he realizes" or "she feels" in action lines. Every inner thought becomes a visible action, an object, a sound, a line of dialogue or voice-over. If the audience can't see it or hear it, it isn't in the film.
-2. **Scorsese: state the visual structural concept before you outline.** This is the organising idea for how the film looks and moves: its images, its spaces, its rhythm. You have to be able to say it in two sentences.
-3. **Jhabvala: find a different form.** "You can't follow the form of the novel." Before outlining, name the film's own architecture. The book's chapters rearranged is not a form.
+## 작업 원칙
 
-## Ground rules
+- **원작에 충실한 것을 기본으로 합니다.** 작가의 목소리, 분위기, 의미를 유지합니다. 각색의 자유도는 사용자의 요청에 맞춥니다.
+- **삭제는 사용자가 결정합니다.** 어떤 대목을 덜어낼지 이유와 함께 제안하고 답을 기다립니다.
+- **분량을 채우기 위해 사건을 만들지 않습니다.** 원작이 암시한 내용을 확장하면 `IMPLIED`로, 원문에 근거가 없는 창작은 `INVENTED`로 표시합니다. 후자는 사용자 승인을 받습니다. 원작이 짧으면 더 짧은 상영 시간을 제안합니다.
+- **출처를 기록합니다.** 개요의 모든 장면에 `C07`처럼 바탕이 된 원작 장 번호를 씁니다. 원작과 상태 파일에서 확인할 수 없는 사실을 확정된 설정으로 취급하지 않습니다.
+- **판단이 어렵다면 A/B 선택지와 추천안을 제시합니다.** 각 판단의 확신도는 높음·보통·낮음으로 표시합니다.
+- **사용자의 결정 때문에 문제가 생기면 한 번 짚습니다.** 어떤 복선이 회수되지 않거나 어느 막의 동력이 사라지는지 설명합니다. 이후 사용자의 결정에 따라 진행하고 기록합니다.
+- **원작을 기준으로 작업합니다.** 같은 책을 각색한 기존 영화는 참고 대상에서 제외합니다. 다른 프로젝트의 취향이나 결정을 그대로 옮기지 않습니다.
+- **영상화하기 어려운 대목은 영상으로 옮길 방법을 찾거나 압축합니다.**
+- **효과적인 원작 대사는 그대로 살립니다.** `adapt.py quote`로 원문을 확인합니다. 검색에서 찾지 못한 문장은 원작의 직접 인용이라고 표시하지 않습니다.
+- **보이스오버(V.O.)를 활용할 수 있습니다.** 원작 문장을 살릴 때도 화면만으로 전달할 수 없는 내용을 담도록 합니다.
+- **관람 등급**은 사용자가 지정한 기준을 따르고, 지정이 없으면 원작의 수위를 따릅니다.
+- **복수 화자나 비선형 시간선**도 같은 순서로 작업합니다. 2단계에서 영화에 맞는 형식을 정합니다.
 
-- **Faithful by default.** Keep the author's voice, tone and meaning. Loosen only when the user says so.
-- **The user decides every cut.** Propose, give reasons, then wait.
-- **Never invent to pad.** You may *expand what the book implies* (flag it `IMPLIED`). Anything with no basis in the text is `INVENTED`, must be flagged, and needs approval. If a book is short, say so and suggest a shorter length. Don't fill it with invention.
-- **Cite the source.** Every outlined scene lists the chapters it comes from, such as `C07`. If something is in neither the book nor the state file, it doesn't exist.
-- **When you're torn, give options** (A/B, with your recommendation). Label your confidence (high, medium or low) on every judgement call.
-- **Push back once.** If one of the user's rulings will break the story, say exactly what breaks (which setup loses its payoff, or which act loses its engine). Then do what they decide, and record it.
-- **Work purely from the book.** Ignore existing film versions of it. The user wants something unique.
-- **Every book gets its own logic.** Don't carry taste or choices over from other adaptations.
-- **Collaborate, don't excuse.** A passage that is hard to film gets translated or compressed. Never hand back "this can't be done."
-- **Keep good dialogue as written.** Where the author's line plays, keep it word for word. Check it with `adapt.py quote`. Never claim a line is the author's unless the check finds it.
-- **Voice-over is welcome.** It is how the author's own sentences can reach the screen. Each V.O. line must earn its place by carrying something the images can't.
-- **Content rating:** let the book decide, unless the user asks for a particular rating.
-- **Multiple narrators or broken timelines** are handled like any other book. The film finds its own form in Stage 2.
+## 세션 시작과 마무리
 
----
+1. 코드 실행이 가능하면 이 스킬 폴더의 `scripts/adapt.py`를 작업 폴더에 `adapt.py`로 복사해 사용합니다. 실행할 수 없다면 그 사실을 한 번 알리고 영어 기준으로 한 페이지에 약 170단어를 잡아 수동으로 추정합니다. 한국어 원고는 실제 페이지에서 다시 맞춥니다.
+2. 사용자가 **`adaptation-state.json`을 첨부했다면** `python3 adapt.py state show`를 먼저 실행합니다. 현재 단계, 마지막 완료 장면, 다음 장면을 세 줄 이내로 알리고 이어서 작업합니다. `user_rulings`에 기록됐거나 이미 승인된 내용을 다시 묻지 않습니다. 기준은 상태 파일과 원작입니다. 시나리오도 첨부됐다면 마지막 장면이 `last_completed_scene`과 일치하는지 확인합니다.
+3. 상태 파일이 없다면 새 프로젝트로 보고 0단계로 갑니다.
 
-## Every session starts here
+**중단 시점은 장면 끝입니다.** 중단 요청을 받으면 쓰고 있는 장면을 마무리한 뒤 상태를 갱신하고 확인합니다. 사용자에게 상태 파일, `script.fountain`, `character-bible.md`를 건넵니다. 다음에는 세 파일을 첨부하고 “이어서 진행해 줘”라고 요청하면 된다고 안내합니다.
 
-1. If code execution is available, use `scripts/adapt.py` from this skill folder (copy it to the working folder as `adapt.py`). If it isn't available, say so once and estimate by hand at about 170 words per page.
-2. **If the user attached `adaptation-state.json`**, run `python3 adapt.py state show` first. Then tell the user where you are in three lines or fewer (stage, last completed scene, next scene) and continue. Never re-ask anything listed under `user_rulings` or already approved. Treat the state file and the book as the truth, not the chat or your memory. If they also attached the script, check that its last scene matches `last_completed_scene`.
-3. **Otherwise this is a new project.** Go to Stage 0.
+## 작업 단계
 
-**Stopping rule:** a session only ends at a **scene boundary**. If the user wants to stop, finish the scene you are writing first. Then update the state, check it, and send the user **the state file, `script.fountain` and `character-bible.md`**. Tell them to attach these three files next time and say "let's continue."
+✋가 붙은 지점에서는 작업을 멈추고 사용자의 결정을 기다립니다.
 
----
+### 0단계. 원작 접수
 
-## Stages (each ✋ is an approval gate: stop and wait)
+- `python3 adapt.py extract <file> --out book.md`를 실행합니다. PDF, EPUB, DOCX, TXT를 받아 반복 머리말과 페이지 번호를 정리하고 각 장에 `[C01]`, `[C02]` 같은 표지를 붙입니다. 스캔 이미지라 추출할 수 없거나 텍스트가 깨지면 작업을 멈추고 알립니다. 장 구분을 찾지 못했다면 이 역시 알립니다.
+- **언어**는 사용자가 명시한 언어를 우선합니다. 한국어로 쓰는 작업임이 문맥상 분명하면 한국어를 기본으로 합니다. 원작과 대화의 언어가 다르고 목표가 불분명한 경우에만 각본 언어를 확인합니다.
+- 논픽션이나 회고록이면 이 스킬이 소설에 맞춰져 있다고 설명한 뒤 계속 진행할지 확인합니다.
+- 저작권이 남아 있는 작품이면 개발용 초고이며 제작이나 판매에는 각색 권리가 필요하다고 한 줄로 알린 뒤 작업을 이어갑니다.
+- 사용자가 원작자라면 인물이 실제로 바랐던 것이 무엇인지, 작가 스스로 덜어내고 싶은 장면이 무엇인지처럼 본문에 답이 없는 질문을 할 수 있습니다.
+- `python3 adapt.py state init "<Title>" --book book.md`를 실행합니다.
+- 평가에 앞서 **원작 전체를 읽습니다.** 장마다 사건, 인물, 살릴 대사를 한 줄씩 `book-notes.md`에 기록합니다. 긴 원작은 읽으면서 기록해 다음 세션에 참고합니다.
 
-### Stage 0: Intake
-- Run `python3 adapt.py extract <file> --out book.md`. It handles PDF, EPUB, DOCX and TXT. It strips running headers and page numbers and labels the chapters `[C01]`, `[C02]` and so on. If the text looks scanned or garbled, stop and tell the user. If no chapters were found, say so.
-- **Language:** if the book isn't in English, ask which language the screenplay should be written in.
-- **Not fiction?** The skill is built for novels. If the book is non-fiction or memoir, say so and ask whether to go ahead.
-- **Still in copyright?** Add one line saying the draft is for development use and that producing or selling it needs the rights. Then carry on.
-- **The user's own novel?** If the user wrote the book, you may ask them what the text leaves open, such as what a character wanted or what they would cut themselves.
-- Run `python3 adapt.py state init "<Title>" --book book.md`.
-- Read the **whole** book before judging it. Write one line per chapter (events, characters, lines worth keeping) into `book-notes.md`. For long books, write these notes as you go, so later sessions don't need to re-read everything.
+### 1단계. 원작 검토 보고서 ✋
 
-### Stage 1: Reading report ✋
-Present:
-- **Spine:** the protagonist, what they want, what they need, the turning points (with chapter citations) and the ending.
-- **Genre and its obligations.** Commit fully. A romance must be a great romance and a tragedy a great tragedy. Name the scenes the genre owes the audience: for a romance, the near-touch that doesn't happen; for a tragedy, the point where the hero could still turn back and doesn't; for a thriller, the clock. **Structure loud, dialogue quiet:** the genre's shape should be unmistakable while the writing stays subtle.
-- **Why this book:** one sentence on what only this book can do on screen. Every later decision gets tested against it.
-- **Suggested length:** pages and running time (one page ≈ one minute), with your reasoning from this book's material. For example: "about 95 pages, just over 1½ hours, because…". The user can override it.
-- **Feasibility:** if the book resists being a feature, say so and how you'd handle it. Then proceed anyway.
-- **Ending verdict:** keep the book's ending by default. Propose a different one **only when you are very confident** the written ending won't work on screen. This should happen in roughly one book in five to ten at most. Typical reasons: the ending is reported offstage, it depends on a coincidence out of nowhere, or it happens in a character's head. When you do propose one, cite the book's own setups that support it, give your confidence, and log it as a departure.
-- **Estimate:** how many sessions the whole adaptation will take. Update this after every gate.
+- **이야기의 뼈대**를 보여줍니다. 주인공, 이루려는 목표와 실제로 필요한 것, 주요 전환점과 원작 장 번호, 결말을 적습니다.
+- **장르가 관객에게 약속하는 것**을 구체적인 장면으로 설명합니다. 로맨스에서는 두 사람이 닿을 듯하다 멈추는 순간, 비극에서는 주인공이 되돌아갈 수 있었는데도 그러지 않는 순간, 스릴러에서는 시간이 다가오는 압박이 예가 됩니다. 장르의 구조는 분명하게 드러내고 대사는 섬세하게 씁니다.
+- **왜 이 작품을 영화로 만드는지** 한 문장으로 적습니다. 이후 모든 결정의 기준입니다.
+- **제안 분량**을 페이지 수와 상영 시간으로 제시하고 원작에서 근거를 댑니다. 통상 한 페이지를 약 1분으로 가늠하되, 한국어 판형과 실제 장면 속도에 맞춰 조정합니다. 사용자가 분량을 정할 수 있습니다.
+- 장편으로 옮기기 어려운 원작이면 이유와 처리 방안을 설명하고 다음 작업을 진행합니다.
+- **결말은 기본적으로 유지합니다.** 현재 결말이 화면에서 작동하기 어렵다는 확신이 아주 높을 때만 대안을 제시합니다. 열 편 중 한두 편 이내로 드물게 적용합니다. 화면 밖에서 전해지는 결말, 사전 복선 없이 등장하는 우연, 인물의 내면에서만 끝나는 결말이 대표적입니다. 대안을 제시할 때는 뒷받침하는 원작 복선, 확신도, 변경 사항을 기록합니다.
+- 전체 작업에 필요한 세션 수를 추정하고, 사용자의 결정을 받을 때마다 갱신합니다.
 
-### Stage 2: Design ✋
-- **Character bible** (`character-bible.md`). One entry per main character: name; age, look and how they carry themselves; **how they speak** (rhythm, vocabulary, tics); one or two verbatim lines from the book; what they want and what they hide; source chapters. Minor characters who exist only to deliver information are **merge candidates**, noted here and decided in Stage 3. **Once approved, the bible is frozen.** Change it only if the user reopens it.
-- **Tone references:** ask the user for two or three films the adaptation should *feel* like. You may suggest some, but never an earlier adaptation of this same book.
-- **New form** (Jhabvala) and **visual structural concept** (Scorsese).
-- **Bold formal device**, only if the book invites one. Example: Joe Wright's *Anna Karenina* stages the story inside a theatre. Propose it with the reason. If the user approves, **commit fully**. Don't offer a plainer version alongside it.
-- **Motifs:** one or two images or objects that recur and change meaning. These are what make an ending land.
-- **Voice-over plan:** whose voice, and what it carries.
+### 2단계. 영화의 설계 ✋
 
-### Stage 3: Cuts ✋
-Present a table with these columns: item | chapters | proposal (cut, compress, merge or keep) | why, tested against the spine and "why this book" | what is lost | confidence.
-- Flag scenes readers love with **⚠ Beloved scene**: famous passages, emotional peaks, set pieces. Say plainly what cutting them would cost.
-- Merging minor characters is allowed.
-- Record the user's rulings in `cuts` and `user_rulings`. Start `departures-log.md`.
+- **인물 설정집**을 `character-bible.md`에 작성합니다. 주요 인물마다 이름, 나이, 외모와 몸가짐, 말하는 리듬과 어휘와 버릇, 원작에서 확인한 대사 한두 줄, 원하는 것과 숨기는 것, 출처 장을 기록합니다. 정보를 전하는 역할만 하는 단역은 **통합 후보**로 표시해 3단계에서 결정합니다. 승인된 설정집은 사용자가 다시 검토해 달라고 할 때 수정합니다.
+- **분위기의 참고작**으로 어떤 느낌의 영화 두세 편을 원하는지 묻습니다. 직접 제안할 수도 있으며 같은 책을 각색한 영화는 제외합니다.
+- 잡발라의 **영화 고유의 형식**과 스코세이지의 **시각적 구성 원리**를 제안합니다.
+- 원작에 어울릴 때만 **과감한 형식적 장치**를 제안하고 근거를 설명합니다. 예를 들어 조 라이트의 《안나 카레니나》는 극장 공간에 이야기의 상당 부분을 배치합니다. 사용자가 승인했다면 그 장치가 영화 전체에서 작동하도록 설계합니다.
+- **모티프**가 될 이미지나 사물을 한두 개 정합니다. 반복되면서 의미가 바뀌어 결말에 힘을 더합니다.
+- **보이스오버 계획**에 화자와 전달할 내용을 적습니다.
 
-### Stage 4: Outline ✋
-- Plan 40–60 scenes, or fewer or more to suit the length. For each scene give: number, act, slug line, source chapters, want and obstacle, the turn (what changes), **word budget**, sound note (music or deliberate silence, where it matters), motif touch, and flags (`IMPLIED` / `INVENTED` / `REORDERED` / `MERGED`).
-- **Label the act breaks out loud**, with their page positions.
-- **Reordering is allowed.** Move material to compress it, or to give what matters more screen time. A memory can be a flash rather than a scene.
-- Keep a **promises ledger**: every setup and where it pays off.
-- Budget in **words, not minutes**. Start at about 170 words per page, and recalibrate from the real pages once the first ten are written. Run `python3 adapt.py budget`. The total must land within ±5% of the agreed length.
+### 3단계. 삭제·압축·통합 결정 ✋
 
-### Stage 5: Writing
-- **The first ten pages first.** Then run the **page-eleven test**: would a reader want page eleven, and why? Answer honestly, fix what needs fixing, then ✋.
-- After that, write in **chunks of about 8–12 scenes**. After each chunk:
-  - run `check` and `budget`
-  - update the state (scene `status`, `last_completed_scene`)
-  - send the script so far
-  - tell the user what was written, the budget drift, and any flags, in two or three lines
-  - pause so they can course-correct
-- If the projected length drifts more than 8% from the target, tell the user before writing more.
-- **Fountain format:**
-  - A title page with Title, Credit, Author and "Source: Based on the novel by…".
-  - Scene headings numbered like `INT. CHURCH TOWER - NIGHT #40#`.
-  - Present-tense action, no more than four lines per paragraph.
-  - Character cues in capitals, with `(V.O.)`, `(O.S.)` and `(CONT'D)`.
-  - Parentheticals and transitions used sparingly.
-  - Sound and music noted plainly in the action where it matters, such as "No music." or "Silence. Then the bell, once."
-  - **No camera directions** ("CLOSE ON", "WE SEE", "ANGLE ON", "PAN"…). Those belong to the director skill.
+항목, 출처 장, 제안(삭제·압축·통합·유지), 이야기의 뼈대와 각색 이유에 비춘 근거, 잃게 되는 것, 확신도를 표로 정리합니다.
 
-### Stage 6: Polish passes
-Run these in order and report in one line what each changed:
-1. **Nolan:** zero `NOLAN` flags from `check`.
-2. **Subtext:** rewrite on-the-nose lines so characters rarely say exactly what they mean. Leave the author's verbatim lines alone if they work.
-3. **Late in, early out:** no greetings, no goodbyes.
-4. **Want and obstacle in every scene.** If a scene has neither, propose cutting or merging it.
-5. **Contrast between consecutive scenes:** loud then quiet, crowded then alone.
-6. **Escalation:** each act costs the protagonist more than the last.
-7. **Motif:** it recurs and changes meaning.
-8. **Promises kept:** every setup pays off, and every payoff was set up.
-9. **Genre obligations** are all met.
-10. **Read-aloud:** say every speech as an actor would, and fix anything that clunks.
-11. **Format and length:** `check` is clean and `budget` is on target.
+- 유명한 대목, 감정의 정점, 공들여 만든 주요 장면처럼 독자가 아끼는 부분은 **⚠ 독자가 아끼는 장면**으로 표시합니다. 없애면 어떤 효과가 사라지는지 설명합니다.
+- 필요하면 단역의 통합을 제안합니다.
+- 사용자의 결정을 `cuts`와 `user_rulings`에 기록하고 `departures-log.md`를 시작합니다.
 
-### Stage 7: Deliver
-Send the user:
-- `script.fountain`, plus `script.pdf` made with `python3 adapt.py render script.fountain script.pdf`. Fountain opens in Final Draft, Highland, WriterSolo and Fade In.
+### 4단계. 장면 개요 ✋
+
+- 장면 40~60개를 기준으로 삼고 목표 분량에 맞춰 조정합니다. 각 장면에는 번호, 막, 장면 제목, 원작 장 번호, 인물의 목표와 장애물, 달라지는 것, **단어 수 목표**, 음악이나 의도적인 침묵이 필요한 지점, 모티프, 해당 표지(`IMPLIED` / `INVENTED` / `REORDERED` / `MERGED`)를 넣습니다.
+- 막이 끝나는 위치와 예상 페이지를 명시합니다.
+- 정보를 압축하거나 중요한 대목에 시간을 주기 위해 장면 순서를 바꿀 수 있습니다. 과거의 기억은 완결된 장면 대신 짧은 이미지로 드러낼 수 있습니다.
+- 모든 **복선과 회수 위치**를 목록으로 관리합니다.
+- **단어 수로 분량을 배분합니다.** 영어의 약 170단어/페이지를 임시 기준으로 삼고, 한국어에서는 띄어쓰기 기준으로 센 단어 수와 실제 출력 페이지를 대조합니다. 처음 10페이지를 쓴 뒤 실측값으로 다시 계산하고 `python3 adapt.py budget`을 실행합니다. 합의 분량과 예상 결과의 차이를 ±5% 이내로 맞춥니다.
+
+### 5단계. 집필
+
+- **먼저 10페이지를 씁니다.** 독자가 11페이지를 읽고 싶을지, 그 이유가 무엇인지 점검합니다. 필요한 부분을 고친 다음 사용자의 결정을 기다립니다. ✋
+- 이후 약 **8~12개 장면씩** 작성합니다. 묶음이 끝날 때마다 다음을 수행합니다.
+  - `check`와 `budget`을 실행합니다.
+  - 장면의 `status`와 `last_completed_scene`을 갱신합니다.
+  - 현재까지의 각본을 보냅니다.
+  - 작성 범위, 분량 차이, 검토 표시를 두세 줄로 알립니다.
+  - 사용자가 방향을 조정할 수 있도록 멈춥니다.
+- 예상 분량이 목표에서 8% 넘게 벗어나면 더 쓰기 전에 알립니다.
+- **Fountain 서식**을 따릅니다.
+  - 표지 메타데이터 키 `Title:`, `Credit:`, `Author:`, `Source:`는 영어 그대로 씁니다. 값에는 한국어를 쓸 수 있습니다. 예를 들어 `Source: 홍길동의 소설을 바탕으로 함`으로 적습니다.
+  - 장면 제목에는 `INT. CHURCH TOWER - NIGHT #40#`처럼 번호를 붙입니다. 한국어 제목은 `.병원 복도 - 밤 #1#`처럼 줄 앞에 점을 붙여 장면 제목임을 명시합니다.
+  - 지문은 현재형으로 쓰고 한 문단을 네 줄 이내로 유지합니다.
+  - 영어 인물명은 대문자로 쓰고, 한국어 인물명은 `@지연`처럼 앞에 `@`를 붙입니다. 필요할 때 `(V.O.)`, `(O.S.)`, `(CONT'D)`를 사용합니다.
+  - 괄호로 단 지시와 장면 전환 표시는 필요한 곳에만 씁니다.
+  - 중요한 소리와 음악은 지문에 간단히 적습니다. 예를 들어 “잠깐의 침묵. 종이 한 번 울린다.”처럼 씁니다.
+  - `CLOSE ON`, `WE SEE`, `ANGLE ON`, `PAN` 같은 카메라 지시는 연출 단계에서 다룹니다.
+
+### 6단계. 퇴고
+
+아래 순서로 확인하고 각 검토에서 바뀐 점을 한 줄로 기록합니다.
+
+1. **화면으로 옮길 수 있는지** 확인합니다. `check`가 내는 `NOLAN` 표시를 해소합니다. 자동 검사는 영어 표현을 중심으로 찾으므로 한국어 지문에서 내면 설명과 촬영 지시가 남았는지도 직접 읽어 확인합니다.
+2. **서브텍스트**를 살립니다. 인물이 속뜻을 그대로 설명하는 대사를 손봅니다. 장면에서 효과적인 원작의 직접 인용 대사는 유지합니다.
+3. **늦게 들어가 일찍 나옵니다.** 관습적인 인사와 작별을 덜어냅니다.
+4. **장면마다 목표와 장애물**을 확인합니다. 둘 다 없다면 삭제하거나 다른 장면과 합치는 방안을 제안합니다.
+5. **이어지는 장면의 대비**를 살립니다. 소란 뒤의 고요, 군중 뒤의 고립처럼 리듬을 바꿉니다.
+6. **판돈을 키웁니다.** 막이 지날수록 주인공이 감수해야 할 대가가 커집니다.
+7. **모티프의 반복과 의미 변화**를 확인합니다.
+8. **복선과 회수**를 양방향으로 확인합니다. 던진 것은 회수되고, 회수되는 것에는 앞선 근거가 있어야 합니다.
+9. **장르가 약속한 장면**을 모두 갖췄는지 확인합니다.
+10. **낭독**합니다. 배우가 연기하듯 대사를 읽고 입에 걸리는 표현을 다듬습니다.
+11. **형식과 분량**을 확인합니다. `check`와 `budget` 결과를 실제 출력물과 함께 봅니다.
+
+### 7단계. 결과물 전달
+
+- `script.fountain`과 `script.pdf`를 건넵니다. 영어 출력은 `python3 adapt.py render script.fountain script.pdf`로 실행합니다. 한글을 출력하려면 `python3 adapt.py render script.fountain script.pdf --font /path/to/korean-font.ttf`로 한글이 포함된 TrueType 글꼴을 지정합니다. 출력이 어렵다면 한국어 PDF 내보내기를 지원하는 편집기에서 Fountain을 열어 PDF로 저장합니다. 최종 PDF에서 글자, 줄바꿈, 페이지 수를 확인합니다. Fountain은 Final Draft, Highland, WriterSolo, Fade In에서 열 수 있습니다.
 - `character-bible.md`
-- `departures-log.md`: numbered rows of book → film → why → confidence → user's ruling
-- **Logline:** one sentence
-- **One-page synopsis:** about 400–500 words
-- **Hardest scenes:** the three to five scenes you found hardest, and why, so the user knows where to look first
-- The final `adaptation-state.json`
+- `departures-log.md`. 각 행에 번호, 원작과 영화의 차이, 이유, 확신도, 사용자의 결정을 적습니다.
+- **한 문장 로그라인**
+- **한 페이지 줄거리**. 영어는 약 400~500단어를 기준으로 하며, 한국어는 실제 한 페이지에 맞춥니다.
+- **각색이 특히 어려웠던 장면 세~다섯 개**와 그 이유. 사용자가 우선 확인할 장면입니다.
+- 최종 `adaptation-state.json`
 
----
+## 나중에 장면 하나를 다시 쓸 때
 
-## Rewriting a single scene later
-When the user attaches the state file and script and names a scene:
-1. Re-read its source chapters and the scenes on either side of it.
-2. Rewrite **only that scene**, within its budget ±15%, with the bible still frozen.
-3. Run `check`.
-4. Log any story change as a departure.
-5. Warn the user if the change breaks a promise later in the script.
-6. Update the state.
+상태 파일과 각본이 첨부됐고 사용자가 수정할 장면을 지정했다면 다음 순서로 진행합니다.
 
-## How to talk to the user
-Put the decisions first. Keep it short. Use tables for cuts and the outline. Label confidence. Ask one clear question per gate, with options. Speak the user's language.
+1. 원작의 해당 장과 각본의 앞뒤 장면을 다시 읽습니다.
+2. 승인된 인물 설정집을 기준으로 해당 장면만 수정합니다. 분량은 장면 목표의 ±15% 이내로 맞춥니다.
+3. `check`를 실행합니다.
+4. 이야기가 바뀌는 내용은 변경 기록에 남깁니다.
+5. 이후 장면에서 회수할 복선이 끊기면 사용자에게 알립니다.
+6. 상태 파일을 갱신합니다.
 
----
+## 사용자에게 설명하는 방식
 
-## Helper script
-The helper lives in `scripts/adapt.py` inside this skill folder. Run it with `python3 scripts/adapt.py <command>`, or copy it to the working folder as `adapt.py`. It needs `pypdf` for PDF input, `beautifulsoup4` for EPUB and `reportlab` for PDF output; install any that are missing with pip.
+결정할 내용을 먼저 말하고 짧게 설명합니다. 삭제 제안과 장면 개요는 표로 정리합니다. 확신도를 밝히고 승인 지점마다 선택지를 붙인 질문을 한 개씩 합니다. 사용자가 선택한 언어로 소통합니다.
 
-| Command | What it does |
+## 보조 스크립트
+
+이 스킬의 `scripts/adapt.py`는 `python3 scripts/adapt.py <command>`로 실행합니다. 작업 폴더에 `adapt.py`라는 이름으로 복사해도 됩니다. PDF 입력은 `pypdf`, EPUB은 `beautifulsoup4`, DOCX는 시스템의 `pandoc`, PDF 출력은 `reportlab`이 필요합니다. 해당 작업에 필요한 의존성이 설치돼 있는지 먼저 확인합니다.
+
+| 명령 | 용도 |
 |---|---|
-| `extract BOOK --out book.md` | PDF/EPUB/DOCX/TXT to clean text, chapters labelled `[C01]`… |
-| `state init TITLE --book book.md` / `state show` | Create or summarise `adaptation-state.json` |
-| `pages SCRIPT` | Page count using standard screenplay layout |
-| `budget [STATE] [SCRIPT]` | Word budgets against written scenes, and projected length |
-| `check SCRIPT [--bible bible.md]` | Format, camera-direction and Nolan-rule checks |
-| `quote book.md "line"` | Confirms a line really is in the book, and where |
-| `render SCRIPT out.pdf` | Screenplay-formatted PDF |
+| `extract BOOK --out book.md` | PDF, EPUB, DOCX, TXT에서 텍스트를 추출하고 장에 `[C01]` 같은 표지를 붙입니다. |
+| `state init TITLE --book book.md` / `state show` | `adaptation-state.json`을 만들거나 진행 상황을 요약합니다. |
+| `pages SCRIPT` | 기본 각본 레이아웃의 예상 페이지를 셉니다. |
+| `budget [STATE] [SCRIPT]` | 목표 단어 수와 실제 장면 분량을 비교하고 전체 분량을 추정합니다. |
+| `check SCRIPT [--bible bible.md]` | 형식, 카메라 지시, 놀런 작법 위반 후보를 확인합니다. |
+| `quote book.md "line"` | 원작에 해당 대사가 있는지와 위치를 확인합니다. |
+| `render SCRIPT out.pdf` | 각본 서식으로 PDF를 출력합니다. 한글 글꼴은 `--font`로 지정합니다. |
+
+**한국어 사용 시** 단어 수와 페이지 수 계산, 자동 `NOLAN`·카메라 표현 검사는 영어 기준에 맞춰 설계되었습니다. 한국어 초고는 지문을 직접 검토하고 출력한 PDF의 글꼴과 실제 페이지를 확인합니다.
+
+**Korean workflow note:** Word and page estimates and the built-in `NOLAN` and camera-direction text heuristics are English-oriented. Review Korean action lines and the rendered PDF layout manually.
